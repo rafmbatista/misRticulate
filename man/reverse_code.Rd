@@ -18,7 +18,7 @@ A numeric vector of the same length as `variable`, with values reverse coded.
 }
 \description{
 This function reverse codes a variable so that the original minimum becomes the maximum and vice versa.
-It checks to ensure that all values in the variable are within the specified original range.
+It checks to ensure that all values in the variable are within the specified original range and handles potential NA values.
 }
 \examples{
 reverse_code(c(1, 2, 3, 4, 5), 1, 5)
