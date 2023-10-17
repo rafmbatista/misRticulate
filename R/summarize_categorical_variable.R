@@ -14,9 +14,9 @@
 #' @examples
 #' \dontrun{
 #' df <- data.frame(category = c('A', 'A', 'B', 'B', 'B', 'C'))
-#' summarize_categories(df, category)
+#' summarize_categorical_variable(df, category)
 #' }
-summarize_categories <- function(.data, variable,
+summarize_categorical_variable <- function(.data, variable,
                                  conf.lvl = 0.95,
                                  arrange = FALSE,
                                  decimal.digits = 3) {
