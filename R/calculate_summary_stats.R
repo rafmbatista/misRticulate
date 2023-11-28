@@ -39,8 +39,8 @@ calculate_summary_stats <- function(data, variable, group=NULL) {
   # Calculate summary statistics
   data %>%
     summarise(
-      mean_value = mean(!!sym(column), na.rm = TRUE),
-      sd_value = sd(!!sym(column), na.rm = TRUE),
+      mean_value = mean(!!sym(variable), na.rm = TRUE),
+      sd_value = sd(!!sym(variable), na.rm = TRUE),
       n_group = n()
     ) %>%
     mutate(
