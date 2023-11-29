@@ -31,16 +31,16 @@
 #'
 #'
 calculate_summary_stats <- function(data, variable, group=NULL) {
-  # Check if group is specified and group the data accordingly
+  # Check if group is specified and, if so, use it for grouping
   if (!is.null(group)) {
-    data <- data %>% group_by(!!sym(group))
+    data <- data %>% group_by(!!rlang::sym(group))
   }
 
   # Calculate summary statistics
   data %>%
     summarise(
-      mean_value = mean(!!sym(variable), na.rm = TRUE),
-      sd_value = sd(!!sym(variable), na.rm = TRUE),
+      mean_value = mean(!!rlang::sym(variable), na.rm = TRUE),
+      sd_value = sd(!!rlang::sym(variable), na.rm = TRUE),
       n_group = n()
     ) %>%
     mutate(
@@ -48,7 +48,13 @@ calculate_summary_stats <- function(data, variable, group=NULL) {
       lower_bound = mean_value - qt(0.975, df = n_group - 1) * se_value,
       upper_bound = mean_value + qt(0.975, df = n_group - 1) * se_value
     ) %>%
-    select(
-      !!sym(group), mean_value, sd_value, n_group, se_value, lower_bound, upper_bound
-    )
+    # If group is specified, include it in the selection
+    {
+      if (!is.null(group)) {
+        select(., !!rlang::sym(group), mean_value, sd_value, se_value, lower_bound, upper_bound, n_group)
+      } else {
+        select(., mean_value, sd_value, se_value, lower_bound, upper_bound, n_group)
+      }
+    }
 }
+
