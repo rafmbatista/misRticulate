@@ -4,12 +4,22 @@
 \alias{summarize_select_all_responses}
 \title{Summarize 'Select All' Survey Responses}
 \usage{
-summarize_select_all_responses(.data, prefix, renaming_scheme = NULL)
+summarize_select_all_responses(
+  .data,
+  prefix,
+  conf.lvl = 0.95,
+  decimal.digits = 3,
+  renaming_scheme = NULL
+)
 }
 \arguments{
 \item{.data}{A dataframe containing the survey data.}
 
 \item{prefix}{The common prefix of the 'Select All' indicator variables in the dataset.}
+
+\item{conf.lvl}{(Optional) The confidence level for the confidence intervals. Default is 0.95.}
+
+\item{decimal.digits}{(Optional) The number of decimal digits to round the results to. Default is 3.}
 
 \item{renaming_scheme}{(Optional) A named list or vector for renaming the extracted categories. If not provided, categories won't be renamed.}
 }

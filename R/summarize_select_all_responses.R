@@ -5,6 +5,8 @@
 #' @param .data A dataframe containing the survey data.
 #' @param prefix The common prefix of the 'Select All' indicator variables in the dataset.
 #' @param renaming_scheme (Optional) A named list or vector for renaming the extracted categories. If not provided, categories won't be renamed.
+#' @param conf.lvl (Optional) The confidence level for the confidence intervals. Default is 0.95.
+#' @param decimal.digits (Optional) The number of decimal digits to round the results to. Default is 3.
 #'
 #' @return A dataframe with columns for the response option, proportion of selections, and standard error of the proportions.
 #' @examples
@@ -17,7 +19,15 @@
 #' print(summarized_data)
 #' }
 #'
-summarize_select_all_responses <- function(.data, prefix, renaming_scheme = NULL) {
+summarize_select_all_responses <- function(.data,
+                                           prefix,
+                                           conf.lvl = 0.95,
+                                           decimal.digits = 3,
+                                           renaming_scheme = NULL) {
+
+  # Confidence level tails
+  tails <- 1 - ((1 - conf.lvl) / 2)
+
   # Filter columns that match the prefix and don't contain "TEXT"
   summarized_data <- .data %>%
     select(starts_with(prefix), -contains("TEXT")) %>%
@@ -29,10 +39,16 @@ summarize_select_all_responses <- function(.data, prefix, renaming_scheme = NULL
     ) %>%
     group_by(response_option) %>%
     summarize(
-      prop_select = mean(selection, na.rm = TRUE),
-      SE = plotrix::std.error(selection, na.rm = TRUE)
+      n = sum(selection, na.rm = TRUE), # Number of selections
+      prop.total = mean(selection, na.rm = TRUE),
+      SE = plotrix::std.error(selection, na.rm = TRUE), # Standard error
+      lower = prop.total - (qnorm(tails) * SE), # Lower bound of the confidence interval
+      upper = prop.total + (qnorm(tails) * SE)  # Upper bound of the confidence interval
     ) %>%
-    arrange(desc(prop_select))
+    mutate(across(c("prop.total", "SE", "lower", "upper"),
+                  ~round(.x, digits = decimal.digits)) # Round results
+           ) %>%
+    arrange(desc(prop.total))
 
   # Rename response options if a renaming scheme is provided
   if (!is.null(renaming_scheme)) {
